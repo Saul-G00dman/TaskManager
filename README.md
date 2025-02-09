@@ -44,7 +44,7 @@ cd task-manager
 **bash**
 ```
 npm install
-__# or__
+# or
 yarn install
 ```
 
@@ -69,7 +69,7 @@ npx shadcn-ui@latest add card input textarea button calendar popover dialog badg
 **bash**
 ```
 npm run dev
-__# or__
+# or
 yarn dev
 ```
 
