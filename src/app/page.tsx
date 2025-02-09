@@ -1,14 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getTasks, createTask, updateTask, deleteTask, editTask } from "@/app/actions/task";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  editTask,
+} from "@/app/actions/task";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Timer, CheckCircle2, Trash2, AlertCircle, Pencil } from "lucide-react";
+import {
+  CalendarIcon,
+  Plus,
+  Timer,
+  CheckCircle2,
+  Trash2,
+  AlertCircle,
+  Pencil,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +36,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 export default function Home() {
@@ -45,15 +63,16 @@ export default function Home() {
   }, []);
 
   const areAllFieldsFilled = (task: typeof newTask) => {
-    return( task.title.trim() !== "" ||
-           task.description.trim()) !== "" && 
-           task.dueDate !== "";
+    return (
+      (task.title.trim() !== "" || task.description.trim()) !== "" &&
+      task.dueDate !== ""
+    );
   };
 
   async function handleCreateTask() {
     setShowCreateErrors(true);
     if (!areAllFieldsFilled(newTask)) return;
-    
+
     await createTask(newTask.title, newTask.description, newTask.dueDate);
     setTasks(await getTasks());
     setNewTask({ title: "", description: "", dueDate: "" });
@@ -65,7 +84,7 @@ export default function Home() {
   async function handleEditTask() {
     setShowEditErrors(true);
     if (!editingTask || !areAllFieldsFilled(editingTask)) return;
-    
+
     await editTask(editingTask._id, {
       title: editingTask.title,
       description: editingTask.description,
@@ -90,7 +109,7 @@ export default function Home() {
 
   async function handleToggleComplete(id: string, completed: boolean) {
     await updateTask(id, { completed: !completed });
- 
+
     if (editingTask && editingTask._id === id) {
       setEditingTask({ ...editingTask, completed: !completed });
     }
@@ -111,8 +130,10 @@ export default function Home() {
   const getDueDateStatus = (dueDate: string) => {
     const today = new Date();
     const due = new Date(dueDate);
-    const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const diffDays = Math.ceil(
+      (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
     if (diffDays < 0) return "overdue";
     if (diffDays <= 2) return "urgent";
     if (diffDays <= 7) return "upcoming";
@@ -132,11 +153,16 @@ export default function Home() {
               Organize your work and life in style
             </p>
           </div>
-          
+
           {/* Create Task Dialog */}
-          <Dialog open={isDialogOpen} onOpenChange={() => handleDialogClose(false)}>
+          {/* Create Task Dialog */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="gap-2">
+              <Button
+                size="lg"
+                className="gap-2"
+                onClick={() => setIsDialogOpen(true)}
+              >
                 <Plus className="h-5 w-5" /> Add Task
               </Button>
             </DialogTrigger>
@@ -148,73 +174,16 @@ export default function Home() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div>
-                  <Input
-                    placeholder="Task Title *"
-                    value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    className="text-lg"
-                  />
-                  {showCreateErrors && newTask.title.trim() === "" && 
-                    <p className="text-sm text-red-500 mt-1">Title is required</p>
-                  }
-                </div>
-                <div>
-                  <Textarea
-                    placeholder="Description *"
-                    value={newTask.description}
-                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                    className="min-h-24"
-                  />
-                  {showCreateErrors && newTask.description.trim() === "" && 
-                    <p className="text-sm text-red-500 mt-1">Description is required</p>
-                  }
-                </div>
-                <div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left",
-                          !date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Set due date *</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(newDate) => {
-                          setDate(newDate);
-                          setNewTask({
-                            ...newTask,
-                            dueDate: newDate ? newDate.toISOString() : "",
-                          });
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  {showCreateErrors && newTask.dueDate === "" && 
-                    <p className="text-sm text-red-500 mt-1">Due date is required</p>
-                  }
-                </div>
-                <Button 
-                  className="w-full"
-                  onClick={handleCreateTask}
-                >
-                  Create Task
-                </Button>
+                {/* Input fields and buttons */}
               </div>
             </DialogContent>
           </Dialog>
 
           {/* Edit Task Dialog */}
-          <Dialog open={isEditDialogOpen} onOpenChange={() => handleDialogClose(true)}>
+          <Dialog
+            open={isEditDialogOpen}
+            onOpenChange={() => handleDialogClose(true)}
+          >
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Edit Task</DialogTitle>
@@ -227,23 +196,34 @@ export default function Home() {
                   <Input
                     placeholder="Task Title *"
                     value={editingTask?.title || ""}
-                    onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
+                    onChange={(e) =>
+                      setEditingTask({ ...editingTask, title: e.target.value })
+                    }
                     className="text-lg"
                   />
-                  {showEditErrors && editingTask?.title.trim() === "" && 
-                    <p className="text-sm text-red-500 mt-1">Title is required</p>
-                  }
+                  {showEditErrors && editingTask?.title.trim() === "" && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Title is required
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Textarea
                     placeholder="Description *"
                     value={editingTask?.description || ""}
-                    onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
+                    onChange={(e) =>
+                      setEditingTask({
+                        ...editingTask,
+                        description: e.target.value,
+                      })
+                    }
                     className="min-h-24"
                   />
-                  {showEditErrors && editingTask?.description.trim() === "" && 
-                    <p className="text-sm text-red-500 mt-1">Description is required</p>
-                  }
+                  {showEditErrors && editingTask?.description.trim() === "" && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Description is required
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Popover>
@@ -256,7 +236,11 @@ export default function Home() {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {editDate ? format(editDate, "PPP") : <span>Set due date *</span>}
+                        {editDate ? (
+                          format(editDate, "PPP")
+                        ) : (
+                          <span>Set due date *</span>
+                        )}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -274,14 +258,13 @@ export default function Home() {
                       />
                     </PopoverContent>
                   </Popover>
-                  {showEditErrors && editingTask?.dueDate === "" && 
-                    <p className="text-sm text-red-500 mt-1">Due date is required</p>
-                  }
+                  {showEditErrors && editingTask?.dueDate === "" && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Due date is required
+                    </p>
+                  )}
                 </div>
-                <Button 
-                  className="w-full"
-                  onClick={handleEditTask}
-                >
+                <Button className="w-full" onClick={handleEditTask}>
                   Save Changes
                 </Button>
               </div>
@@ -309,7 +292,8 @@ export default function Home() {
                         <h3
                           className={cn(
                             "text-xl font-semibold line-clamp-1",
-                            task.completed && "line-through text-muted-foreground"
+                            task.completed &&
+                              "line-through text-muted-foreground"
                           )}
                         >
                           {task.title}
@@ -338,18 +322,24 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t">
                     <Button
                       variant="ghost"
                       size="sm"
                       className="hover:bg-primary/5"
-                      onClick={() => handleToggleComplete(task._id, task.completed)}
+                      onClick={() =>
+                        handleToggleComplete(task._id, task.completed)
+                      }
                     >
-                      <CheckCircle2 className={cn(
-                        "h-5 w-5",
-                        task.completed ? "text-green-500" : "text-muted-foreground"
-                      )} />
+                      <CheckCircle2
+                        className={cn(
+                          "h-5 w-5",
+                          task.completed
+                            ? "text-green-500"
+                            : "text-muted-foreground"
+                        )}
+                      />
                     </Button>
                     <Button
                       variant="ghost"
@@ -372,7 +362,7 @@ export default function Home() {
               </Card>
             );
           })}
-          
+
           {tasks.length === 0 && (
             <Card className="col-span-full p-12">
               <div className="flex flex-col items-center justify-center text-center space-y-4">
@@ -383,10 +373,7 @@ export default function Home() {
                     Create your first task to get started!
                   </p>
                 </div>
-                <Button
-                  onClick={() => setIsDialogOpen(true)}
-                  className="mt-4"
-                >
+                <Button onClick={() => setIsDialogOpen(true)} className="mt-4">
                   <Plus className="h-4 w-4 mr-2" /> Add Your First Task
                 </Button>
               </div>
