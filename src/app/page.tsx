@@ -69,18 +69,6 @@ export default function Home() {
     );
   };
 
-  async function handleCreateTask() {
-    setShowCreateErrors(true);
-    if (!areAllFieldsFilled(newTask)) return;
-
-    await createTask(newTask.title, newTask.description, newTask.dueDate);
-    setTasks(await getTasks());
-    setNewTask({ title: "", description: "", dueDate: "" });
-    setDate(undefined);
-    setShowCreateErrors(false);
-    setIsDialogOpen(false);
-  }
-
   async function handleEditTask() {
     setShowEditErrors(true);
     if (!editingTask || !areAllFieldsFilled(editingTask)) return;
